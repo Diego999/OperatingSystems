@@ -1,0 +1,11 @@
+Operating systems - assignment 1
+--------------------------------
+   by Diego Antognini and Jason Racine
+
+First syscall - get_unique_id
+-----------------------------
+To generate a unique id, we use a simple counter which is atomically accessed and incremented at each call. The ID stays system-wide unique during execution until next reboot or reaching the max_size of atomic_int (~2^24). Atomic instructions ensure that no 2 or more concurrent processes would get the same ID when calling at the same time.
+
+Second syscall - get_child_pids
+-------------------------------
+The child PIDs of the current user process are obtained through the get_current() kernel method, by traversing its children sublist with kernel linked list functions. Management of the limit/num_children constraints is done by simple if/else.
