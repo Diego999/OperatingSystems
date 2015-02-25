@@ -1,306 +1,483 @@
-diff --git a/.config b/.config
-index a47b575..f27636b 100644
---- a/.config
-+++ b/.config
-@@ -293,7 +293,6 @@ CONFIG_X86_FEATURE_NAMES=y
- CONFIG_X86_MPPARSE=y
- # CONFIG_X86_BIGSMP is not set
- # CONFIG_X86_EXTENDED_PLATFORM is not set
--# CONFIG_X86_INTEL_LPSS is not set
- # CONFIG_IOSF_MBI is not set
- # CONFIG_X86_32_IRIS is not set
- # CONFIG_SCHED_OMIT_FRAME_POINTER is not set
-@@ -409,7 +408,6 @@ CONFIG_X86_PAT=y
- CONFIG_ARCH_USES_PG_UNCACHED=y
- CONFIG_ARCH_RANDOM=y
- CONFIG_X86_SMAP=y
--# CONFIG_EFI is not set
- # CONFIG_SECCOMP is not set
- # CONFIG_HZ_100 is not set
- CONFIG_HZ_250=y
-@@ -433,28 +431,7 @@ CONFIG_ARCH_ENABLE_MEMORY_HOTPLUG=y
- # CONFIG_SUSPEND is not set
- # CONFIG_HIBERNATION is not set
- # CONFIG_PM_RUNTIME is not set
--CONFIG_ACPI=y
--CONFIG_ACPI_LEGACY_TABLES_LOOKUP=y
--CONFIG_ARCH_MIGHT_HAVE_ACPI_PDC=y
--# CONFIG_ACPI_PROCFS_POWER is not set
--# CONFIG_ACPI_EC_DEBUGFS is not set
--# CONFIG_ACPI_AC is not set
--# CONFIG_ACPI_BATTERY is not set
--CONFIG_ACPI_BUTTON=y
--# CONFIG_ACPI_DOCK is not set
--# CONFIG_ACPI_PROCESSOR is not set
--# CONFIG_ACPI_CUSTOM_DSDT is not set
--# CONFIG_ACPI_INITRD_TABLE_OVERRIDE is not set
--# CONFIG_ACPI_DEBUG is not set
--# CONFIG_ACPI_PCI_SLOT is not set
--CONFIG_X86_PM_TIMER=y
--# CONFIG_ACPI_CONTAINER is not set
--# CONFIG_ACPI_SBS is not set
--# CONFIG_ACPI_HED is not set
--# CONFIG_ACPI_REDUCED_HARDWARE_ONLY is not set
--CONFIG_HAVE_ACPI_APEI=y
--CONFIG_HAVE_ACPI_APEI_NMI=y
--# CONFIG_ACPI_APEI is not set
-+# CONFIG_ACPI is not set
- # CONFIG_SFI is not set
- 
- #
-@@ -478,7 +455,6 @@ CONFIG_PCI=y
- CONFIG_PCI_GOANY=y
- CONFIG_PCI_BIOS=y
- CONFIG_PCI_DIRECT=y
--CONFIG_PCI_MMCONFIG=y
- CONFIG_PCI_DOMAINS=y
- CONFIG_PCIEPORTBUS=y
- # CONFIG_PCIEAER is not set
-@@ -495,7 +471,6 @@ CONFIG_PCIEASPM_DEFAULT=y
- # CONFIG_PCI_IOV is not set
- # CONFIG_PCI_PRI is not set
- # CONFIG_PCI_PASID is not set
--# CONFIG_PCI_IOAPIC is not set
- CONFIG_PCI_LABEL=y
- 
- #
-@@ -651,13 +626,6 @@ CONFIG_GENERIC_CPU_AUTOPROBE=y
- # CONFIG_MTD is not set
- CONFIG_ARCH_MIGHT_HAVE_PC_PARPORT=y
- # CONFIG_PARPORT is not set
--CONFIG_PNP=y
--CONFIG_PNP_DEBUG_MESSAGES=y
--
--#
--# Protocols
--#
--CONFIG_PNPACPI=y
- CONFIG_BLK_DEV=y
- # CONFIG_BLK_DEV_NULL_BLK is not set
- # CONFIG_BLK_DEV_FD is not set
-@@ -818,7 +786,6 @@ CONFIG_VMWARE_PVSCSI=m
- CONFIG_ATA=m
- # CONFIG_ATA_NONSTANDARD is not set
- CONFIG_ATA_VERBOSE_ERROR=y
--CONFIG_ATA_ACPI=y
- CONFIG_SATA_PMP=y
- 
- #
-@@ -907,7 +874,6 @@ CONFIG_ATA_PIIX=m
- #
- # Generic fallback / legacy drivers
- #
--# CONFIG_PATA_ACPI is not set
- CONFIG_ATA_GENERIC=m
- # CONFIG_PATA_LEGACY is not set
- # CONFIG_MD is not set
-@@ -1018,7 +984,6 @@ CONFIG_E1000E=m
- # CONFIG_NET_VENDOR_WIZNET is not set
- # CONFIG_FDDI is not set
- # CONFIG_HIPPI is not set
--# CONFIG_NET_SB1000 is not set
- # CONFIG_PHYLIB is not set
- # CONFIG_PPP is not set
- # CONFIG_SLIP is not set
-@@ -1123,7 +1088,6 @@ CONFIG_DEVPTS_MULTIPLE_INSTANCES=y
- #
- CONFIG_SERIAL_8250=m
- CONFIG_SERIAL_8250_DEPRECATED_OPTIONS=y
--CONFIG_SERIAL_8250_PNP=y
- CONFIG_SERIAL_8250_PCI=m
- CONFIG_SERIAL_8250_NR_UARTS=32
- CONFIG_SERIAL_8250_RUNTIME_UARTS=4
-@@ -1133,7 +1097,6 @@ CONFIG_SERIAL_8250_EXTENDED=y
- # CONFIG_SERIAL_8250_DETECT_IRQ is not set
- # CONFIG_SERIAL_8250_RSA is not set
- # CONFIG_SERIAL_8250_DW is not set
--# CONFIG_SERIAL_8250_FINTEK is not set
- 
- #
- # Non-8250 serial port support
-@@ -1164,7 +1127,6 @@ CONFIG_NVRAM=m
- # CONFIG_PC8736x_GPIO is not set
- # CONFIG_NSC_GPIO is not set
- # CONFIG_RAW_DRIVER is not set
--# CONFIG_HPET is not set
- # CONFIG_HANGCHECK_TIMER is not set
- # CONFIG_TCG_TPM is not set
- # CONFIG_TELCLOCK is not set
-@@ -1266,7 +1228,6 @@ CONFIG_AGP_INTEL=m
- CONFIG_INTEL_GTT=m
- CONFIG_VGA_ARB=y
- CONFIG_VGA_ARB_MAX_GPUS=16
--# CONFIG_VGA_SWITCHEROO is not set
- 
- #
- # Direct Rendering Manager
-@@ -1498,7 +1459,6 @@ CONFIG_FIRMWARE_MEMMAP=y
- # CONFIG_DMIID is not set
- # CONFIG_DMI_SYSFS is not set
- CONFIG_DMI_SCAN_MACHINE_NON_EFI_FALLBACK=y
--# CONFIG_ISCSI_IBFT_FIND is not set
- # CONFIG_GOOGLE_FIRMWARE is not set
- 
- #
+diff --git a/LAB1 b/LAB1
+new file mode 100644
+index 0000000..48e01a3
+--- /dev/null
++++ b/LAB1
+@@ -0,0 +1,306 @@
++diff --git a/.config b/.config
++index a47b575..f27636b 100644
++--- a/.config
+++++ b/.config
++@@ -293,7 +293,6 @@ CONFIG_X86_FEATURE_NAMES=y
++ CONFIG_X86_MPPARSE=y
++ # CONFIG_X86_BIGSMP is not set
++ # CONFIG_X86_EXTENDED_PLATFORM is not set
++-# CONFIG_X86_INTEL_LPSS is not set
++ # CONFIG_IOSF_MBI is not set
++ # CONFIG_X86_32_IRIS is not set
++ # CONFIG_SCHED_OMIT_FRAME_POINTER is not set
++@@ -409,7 +408,6 @@ CONFIG_X86_PAT=y
++ CONFIG_ARCH_USES_PG_UNCACHED=y
++ CONFIG_ARCH_RANDOM=y
++ CONFIG_X86_SMAP=y
++-# CONFIG_EFI is not set
++ # CONFIG_SECCOMP is not set
++ # CONFIG_HZ_100 is not set
++ CONFIG_HZ_250=y
++@@ -433,28 +431,7 @@ CONFIG_ARCH_ENABLE_MEMORY_HOTPLUG=y
++ # CONFIG_SUSPEND is not set
++ # CONFIG_HIBERNATION is not set
++ # CONFIG_PM_RUNTIME is not set
++-CONFIG_ACPI=y
++-CONFIG_ACPI_LEGACY_TABLES_LOOKUP=y
++-CONFIG_ARCH_MIGHT_HAVE_ACPI_PDC=y
++-# CONFIG_ACPI_PROCFS_POWER is not set
++-# CONFIG_ACPI_EC_DEBUGFS is not set
++-# CONFIG_ACPI_AC is not set
++-# CONFIG_ACPI_BATTERY is not set
++-CONFIG_ACPI_BUTTON=y
++-# CONFIG_ACPI_DOCK is not set
++-# CONFIG_ACPI_PROCESSOR is not set
++-# CONFIG_ACPI_CUSTOM_DSDT is not set
++-# CONFIG_ACPI_INITRD_TABLE_OVERRIDE is not set
++-# CONFIG_ACPI_DEBUG is not set
++-# CONFIG_ACPI_PCI_SLOT is not set
++-CONFIG_X86_PM_TIMER=y
++-# CONFIG_ACPI_CONTAINER is not set
++-# CONFIG_ACPI_SBS is not set
++-# CONFIG_ACPI_HED is not set
++-# CONFIG_ACPI_REDUCED_HARDWARE_ONLY is not set
++-CONFIG_HAVE_ACPI_APEI=y
++-CONFIG_HAVE_ACPI_APEI_NMI=y
++-# CONFIG_ACPI_APEI is not set
+++# CONFIG_ACPI is not set
++ # CONFIG_SFI is not set
++ 
++ #
++@@ -478,7 +455,6 @@ CONFIG_PCI=y
++ CONFIG_PCI_GOANY=y
++ CONFIG_PCI_BIOS=y
++ CONFIG_PCI_DIRECT=y
++-CONFIG_PCI_MMCONFIG=y
++ CONFIG_PCI_DOMAINS=y
++ CONFIG_PCIEPORTBUS=y
++ # CONFIG_PCIEAER is not set
++@@ -495,7 +471,6 @@ CONFIG_PCIEASPM_DEFAULT=y
++ # CONFIG_PCI_IOV is not set
++ # CONFIG_PCI_PRI is not set
++ # CONFIG_PCI_PASID is not set
++-# CONFIG_PCI_IOAPIC is not set
++ CONFIG_PCI_LABEL=y
++ 
++ #
++@@ -651,13 +626,6 @@ CONFIG_GENERIC_CPU_AUTOPROBE=y
++ # CONFIG_MTD is not set
++ CONFIG_ARCH_MIGHT_HAVE_PC_PARPORT=y
++ # CONFIG_PARPORT is not set
++-CONFIG_PNP=y
++-CONFIG_PNP_DEBUG_MESSAGES=y
++-
++-#
++-# Protocols
++-#
++-CONFIG_PNPACPI=y
++ CONFIG_BLK_DEV=y
++ # CONFIG_BLK_DEV_NULL_BLK is not set
++ # CONFIG_BLK_DEV_FD is not set
++@@ -818,7 +786,6 @@ CONFIG_VMWARE_PVSCSI=m
++ CONFIG_ATA=m
++ # CONFIG_ATA_NONSTANDARD is not set
++ CONFIG_ATA_VERBOSE_ERROR=y
++-CONFIG_ATA_ACPI=y
++ CONFIG_SATA_PMP=y
++ 
++ #
++@@ -907,7 +874,6 @@ CONFIG_ATA_PIIX=m
++ #
++ # Generic fallback / legacy drivers
++ #
++-# CONFIG_PATA_ACPI is not set
++ CONFIG_ATA_GENERIC=m
++ # CONFIG_PATA_LEGACY is not set
++ # CONFIG_MD is not set
++@@ -1018,7 +984,6 @@ CONFIG_E1000E=m
++ # CONFIG_NET_VENDOR_WIZNET is not set
++ # CONFIG_FDDI is not set
++ # CONFIG_HIPPI is not set
++-# CONFIG_NET_SB1000 is not set
++ # CONFIG_PHYLIB is not set
++ # CONFIG_PPP is not set
++ # CONFIG_SLIP is not set
++@@ -1123,7 +1088,6 @@ CONFIG_DEVPTS_MULTIPLE_INSTANCES=y
++ #
++ CONFIG_SERIAL_8250=m
++ CONFIG_SERIAL_8250_DEPRECATED_OPTIONS=y
++-CONFIG_SERIAL_8250_PNP=y
++ CONFIG_SERIAL_8250_PCI=m
++ CONFIG_SERIAL_8250_NR_UARTS=32
++ CONFIG_SERIAL_8250_RUNTIME_UARTS=4
++@@ -1133,7 +1097,6 @@ CONFIG_SERIAL_8250_EXTENDED=y
++ # CONFIG_SERIAL_8250_DETECT_IRQ is not set
++ # CONFIG_SERIAL_8250_RSA is not set
++ # CONFIG_SERIAL_8250_DW is not set
++-# CONFIG_SERIAL_8250_FINTEK is not set
++ 
++ #
++ # Non-8250 serial port support
++@@ -1164,7 +1127,6 @@ CONFIG_NVRAM=m
++ # CONFIG_PC8736x_GPIO is not set
++ # CONFIG_NSC_GPIO is not set
++ # CONFIG_RAW_DRIVER is not set
++-# CONFIG_HPET is not set
++ # CONFIG_HANGCHECK_TIMER is not set
++ # CONFIG_TCG_TPM is not set
++ # CONFIG_TELCLOCK is not set
++@@ -1266,7 +1228,6 @@ CONFIG_AGP_INTEL=m
++ CONFIG_INTEL_GTT=m
++ CONFIG_VGA_ARB=y
++ CONFIG_VGA_ARB_MAX_GPUS=16
++-# CONFIG_VGA_SWITCHEROO is not set
++ 
++ #
++ # Direct Rendering Manager
++@@ -1498,7 +1459,6 @@ CONFIG_FIRMWARE_MEMMAP=y
++ # CONFIG_DMIID is not set
++ # CONFIG_DMI_SYSFS is not set
++ CONFIG_DMI_SCAN_MACHINE_NON_EFI_FALLBACK=y
++-# CONFIG_ISCSI_IBFT_FIND is not set
++ # CONFIG_GOOGLE_FIRMWARE is not set
++ 
++ #
++diff --git a/arch/x86/syscalls/syscall_32.tbl b/arch/x86/syscalls/syscall_32.tbl
++index 118393c..9fe1b5d 100644
++--- a/arch/x86/syscalls/syscall_32.tbl
+++++ b/arch/x86/syscalls/syscall_32.tbl
++@@ -364,5 +364,3 @@
++ 355	i386	getrandom		sys_getrandom
++ 356	i386	memfd_create		sys_memfd_create
++ 357	i386	bpf			sys_bpf
++-358	i386	get_unique_id		sys_get_unique_id
++-359	i386	get_child_pids		sys_get_child_pids
++diff --git a/arch/x86/syscalls/syscall_64.tbl b/arch/x86/syscalls/syscall_64.tbl
++index 5239789..281150b 100644
++--- a/arch/x86/syscalls/syscall_64.tbl
+++++ b/arch/x86/syscalls/syscall_64.tbl
++@@ -366,5 +366,3 @@
++ 542	x32	getsockopt		compat_sys_getsockopt
++ 543	x32	io_setup		compat_sys_io_setup
++ 544	x32	io_submit		compat_sys_io_submit
++-545	x32	get_unique_id		compat_sys_get_unique_id
++-546	x32	get_child_pids		compat_sys_get_child_pids
++diff --git a/include/linux/syscalls.h b/include/linux/syscalls.h
++index d17870d..bda9b81 100644
++--- a/include/linux/syscalls.h
+++++ b/include/linux/syscalls.h
++@@ -205,8 +205,6 @@ extern struct trace_event_functions exit_syscall_print_funcs;
++ 	}								\
++ 	static inline long SYSC##name(__MAP(x,__SC_DECL,__VA_ARGS__))
++ 
++-asmlinkage long sys_get_unique_id(int *uuid);
++-asmlinkage long sys_get_child_pids(pid_t* list, size_t limit, size_t* num_children);
++ asmlinkage long sys32_quotactl(unsigned int cmd, const char __user *special,
++ 			       qid_t id, void __user *addr);
++ asmlinkage long sys_time(time_t __user *tloc);
++diff --git a/kernel/Makefile b/kernel/Makefile
++index 8f16e08..17ea6d4 100644
++--- a/kernel/Makefile
+++++ b/kernel/Makefile
++@@ -11,9 +11,6 @@ obj-y     = fork.o exec_domain.o panic.o \
++ 	    notifier.o ksysfs.o cred.o reboot.o \
++ 	    async.o range.o groups.o smpboot.o
++ 
++-obj-y	+= get_unique_id.o
++-obj-y	+= get_child_pids.o
++-
++ ifdef CONFIG_FUNCTION_TRACER
++ # Do not trace debug files and internal ftrace files
++ CFLAGS_REMOVE_cgroup-debug.o = -pg
++diff --git a/kernel/get_child_pids.c b/kernel/get_child_pids.c
++deleted file mode 100644
++index d263451..0000000
++--- a/kernel/get_child_pids.c
+++++ /dev/null
++@@ -1,83 +0,0 @@
++-#include <linux/linkage.h>
++-#include <linux/uaccess.h>
++-#include <linux/sched.h>
++-
++-size_t count_children_from_task_struct(struct task_struct* curr) 
++-{
++-	//printk("now executing count_children_from_task_struct\n");
++-	struct list_head* pos;
++-	size_t counter = 0;
++-	
++-	task_lock(curr);
++-
++-	list_for_each(pos, &(curr->children))
++-	{
++-		counter++;
++-		//printk("    counter is now %d\n", counter);
++-	}
++-	
++-	task_unlock(curr);
++-
++-	//printk("    just before returning, counter is %d\n", counter);
++-	return counter;
++-}
++-
++-void copy_children_from_task_struct(struct task_struct* curr, pid_t* list_dst, size_t n)
++-{
++-	//printk("executing copy_children_from_task_struct\n");
++-	struct task_struct* tmp;
++-	size_t i = 0;
++-
++-	task_lock(curr);
++-
++-	list_for_each_entry(tmp, &(curr->children), sibling)
++-	{
++-		//printk("    child pid found : %d\n", tmp->pid);
++-		if(i < n)
++-		{
++-			list_dst[i++] = tmp->pid;
++-		}
++-	}
++-
++-	task_unlock(curr);
++-}
++-
++-/*
++-	Return a list of PIDs of a process direct children.
++-	pid_t* list -> Pointer where the result will be stored after the call
++-	size_t limit -> Maximum size list buffer can store
++-	size_t* num_children -> Pointer to the location where the total number of children will be stored after the call
++-*/
++-asmlinkage long sys_get_child_pids(pid_t* list, size_t limit, size_t* num_children)
++-{
++-	struct task_struct* curr = get_current();
++-
++-	size_t nb_children = count_children_from_task_struct(curr);
++-
++-	if(put_user(0, num_children) != 0)
++-		return -EFAULT;
++-
++-	if((list == NULL && limit != 0) || (put_user(0, list) != 0))
++-		return -EFAULT;
++-
++-	//printk("putting nb_children(=%d) into num_children\n", nb_children);
++-	put_user(nb_children, num_children); //Happens in all the cases
++-	
++-	if(limit == 0)
++-	{
++-		//Store only the number of children into num_children
++-		return 0;
++-	}
++-	else if(limit >= nb_children)
++-	{
++-		//Copy all children PIDs into list buffer, save the number of children in num_children variable
++-		copy_children_from_task_struct(curr, list, nb_children);
++-		return 0;
++-	}
++-	else// if(limit < nb_children)
++-	{
++-		//Copy the first limit children PIDs into the buffer, save the number of children in num_children
++-		copy_children_from_task_struct(curr, list, limit);
++-		return -ENOBUFS;
++-	}
++-}
++diff --git a/kernel/get_unique_id.c b/kernel/get_unique_id.c
++deleted file mode 100644
++index 3614026..0000000
++--- a/kernel/get_unique_id.c
+++++ /dev/null
++@@ -1,20 +0,0 @@
++-#include <linux/linkage.h>
++-#include <linux/uaccess.h>
++-#include <linux/atomic.h>
++-
++-asmlinkage long sys_get_unique_id(int *uuid)
++-{
++-	// initialize a static atomic counter
++-	static atomic_t id = ATOMIC_INIT(0);
++-
++-	// check wether the address is in the user-space memory
++-	if (put_user(0, uuid) != 0)
++-		return -EFAULT;
++-
++-	// increment the counter
++-	atomic_inc(&id);
++-	put_user(atomic_read(&id), uuid);
++-
++-	// final return
++-	return 0;
++-}
 diff --git a/arch/x86/syscalls/syscall_32.tbl b/arch/x86/syscalls/syscall_32.tbl
-index 118393c..9fe1b5d 100644
+index 9fe1b5d..118393c 100644
 --- a/arch/x86/syscalls/syscall_32.tbl
 +++ b/arch/x86/syscalls/syscall_32.tbl
-@@ -364,5 +364,3 @@
+@@ -364,3 +364,5 @@
  355	i386	getrandom		sys_getrandom
  356	i386	memfd_create		sys_memfd_create
  357	i386	bpf			sys_bpf
--358	i386	get_unique_id		sys_get_unique_id
--359	i386	get_child_pids		sys_get_child_pids
++358	i386	get_unique_id		sys_get_unique_id
++359	i386	get_child_pids		sys_get_child_pids
 diff --git a/arch/x86/syscalls/syscall_64.tbl b/arch/x86/syscalls/syscall_64.tbl
-index 5239789..281150b 100644
+index 281150b..5239789 100644
 --- a/arch/x86/syscalls/syscall_64.tbl
 +++ b/arch/x86/syscalls/syscall_64.tbl
-@@ -366,5 +366,3 @@
+@@ -366,3 +366,5 @@
  542	x32	getsockopt		compat_sys_getsockopt
  543	x32	io_setup		compat_sys_io_setup
  544	x32	io_submit		compat_sys_io_submit
--545	x32	get_unique_id		compat_sys_get_unique_id
--546	x32	get_child_pids		compat_sys_get_child_pids
++545	x32	get_unique_id		compat_sys_get_unique_id
++546	x32	get_child_pids		compat_sys_get_child_pids
 diff --git a/include/linux/syscalls.h b/include/linux/syscalls.h
-index d17870d..bda9b81 100644
+index bda9b81..d17870d 100644
 --- a/include/linux/syscalls.h
 +++ b/include/linux/syscalls.h
-@@ -205,8 +205,6 @@ extern struct trace_event_functions exit_syscall_print_funcs;
+@@ -205,6 +205,8 @@ extern struct trace_event_functions exit_syscall_print_funcs;
  	}								\
  	static inline long SYSC##name(__MAP(x,__SC_DECL,__VA_ARGS__))
  
--asmlinkage long sys_get_unique_id(int *uuid);
--asmlinkage long sys_get_child_pids(pid_t* list, size_t limit, size_t* num_children);
++asmlinkage long sys_get_unique_id(int *uuid);
++asmlinkage long sys_get_child_pids(pid_t* list, size_t limit, size_t* num_children);
  asmlinkage long sys32_quotactl(unsigned int cmd, const char __user *special,
  			       qid_t id, void __user *addr);
  asmlinkage long sys_time(time_t __user *tloc);
 diff --git a/kernel/Makefile b/kernel/Makefile
-index 8f16e08..17ea6d4 100644
+index 17ea6d4..8f16e08 100644
 --- a/kernel/Makefile
 +++ b/kernel/Makefile
-@@ -11,9 +11,6 @@ obj-y     = fork.o exec_domain.o panic.o \
+@@ -11,6 +11,9 @@ obj-y     = fork.o exec_domain.o panic.o \
  	    notifier.o ksysfs.o cred.o reboot.o \
  	    async.o range.o groups.o smpboot.o
  
--obj-y	+= get_unique_id.o
--obj-y	+= get_child_pids.o
--
++obj-y	+= get_unique_id.o
++obj-y	+= get_child_pids.o
++
  ifdef CONFIG_FUNCTION_TRACER
  # Do not trace debug files and internal ftrace files
  CFLAGS_REMOVE_cgroup-debug.o = -pg
 diff --git a/kernel/get_child_pids.c b/kernel/get_child_pids.c
-deleted file mode 100644
-index d263451..0000000
---- a/kernel/get_child_pids.c
-+++ /dev/null
-@@ -1,83 +0,0 @@
--#include <linux/linkage.h>
--#include <linux/uaccess.h>
--#include <linux/sched.h>
--
--size_t count_children_from_task_struct(struct task_struct* curr) 
--{
--	//printk("now executing count_children_from_task_struct\n");
--	struct list_head* pos;
--	size_t counter = 0;
--	
--	task_lock(curr);
--
--	list_for_each(pos, &(curr->children))
--	{
--		counter++;
--		//printk("    counter is now %d\n", counter);
--	}
--	
--	task_unlock(curr);
--
--	//printk("    just before returning, counter is %d\n", counter);
--	return counter;
--}
--
--void copy_children_from_task_struct(struct task_struct* curr, pid_t* list_dst, size_t n)
--{
--	//printk("executing copy_children_from_task_struct\n");
--	struct task_struct* tmp;
--	size_t i = 0;
--
--	task_lock(curr);
--
--	list_for_each_entry(tmp, &(curr->children), sibling)
--	{
--		//printk("    child pid found : %d\n", tmp->pid);
--		if(i < n)
--		{
--			list_dst[i++] = tmp->pid;
--		}
--	}
--
--	task_unlock(curr);
--}
--
--/*
--	Return a list of PIDs of a process direct children.
--	pid_t* list -> Pointer where the result will be stored after the call
--	size_t limit -> Maximum size list buffer can store
--	size_t* num_children -> Pointer to the location where the total number of children will be stored after the call
--*/
--asmlinkage long sys_get_child_pids(pid_t* list, size_t limit, size_t* num_children)
--{
--	struct task_struct* curr = get_current();
--
--	size_t nb_children = count_children_from_task_struct(curr);
--
--	if(put_user(0, num_children) != 0)
--		return -EFAULT;
--
--	if((list == NULL && limit != 0) || (put_user(0, list) != 0))
--		return -EFAULT;
--
--	//printk("putting nb_children(=%d) into num_children\n", nb_children);
--	put_user(nb_children, num_children); //Happens in all the cases
--	
--	if(limit == 0)
--	{
--		//Store only the number of children into num_children
--		return 0;
--	}
--	else if(limit >= nb_children)
--	{
--		//Copy all children PIDs into list buffer, save the number of children in num_children variable
--		copy_children_from_task_struct(curr, list, nb_children);
--		return 0;
--	}
--	else// if(limit < nb_children)
--	{
--		//Copy the first limit children PIDs into the buffer, save the number of children in num_children
--		copy_children_from_task_struct(curr, list, limit);
--		return -ENOBUFS;
--	}
--}
+new file mode 100644
+index 0000000..d263451
+--- /dev/null
++++ b/kernel/get_child_pids.c
+@@ -0,0 +1,83 @@
++#include <linux/linkage.h>
++#include <linux/uaccess.h>
++#include <linux/sched.h>
++
++size_t count_children_from_task_struct(struct task_struct* curr) 
++{
++	//printk("now executing count_children_from_task_struct\n");
++	struct list_head* pos;
++	size_t counter = 0;
++	
++	task_lock(curr);
++
++	list_for_each(pos, &(curr->children))
++	{
++		counter++;
++		//printk("    counter is now %d\n", counter);
++	}
++	
++	task_unlock(curr);
++
++	//printk("    just before returning, counter is %d\n", counter);
++	return counter;
++}
++
++void copy_children_from_task_struct(struct task_struct* curr, pid_t* list_dst, size_t n)
++{
++	//printk("executing copy_children_from_task_struct\n");
++	struct task_struct* tmp;
++	size_t i = 0;
++
++	task_lock(curr);
++
++	list_for_each_entry(tmp, &(curr->children), sibling)
++	{
++		//printk("    child pid found : %d\n", tmp->pid);
++		if(i < n)
++		{
++			list_dst[i++] = tmp->pid;
++		}
++	}
++
++	task_unlock(curr);
++}
++
++/*
++	Return a list of PIDs of a process direct children.
++	pid_t* list -> Pointer where the result will be stored after the call
++	size_t limit -> Maximum size list buffer can store
++	size_t* num_children -> Pointer to the location where the total number of children will be stored after the call
++*/
++asmlinkage long sys_get_child_pids(pid_t* list, size_t limit, size_t* num_children)
++{
++	struct task_struct* curr = get_current();
++
++	size_t nb_children = count_children_from_task_struct(curr);
++
++	if(put_user(0, num_children) != 0)
++		return -EFAULT;
++
++	if((list == NULL && limit != 0) || (put_user(0, list) != 0))
++		return -EFAULT;
++
++	//printk("putting nb_children(=%d) into num_children\n", nb_children);
++	put_user(nb_children, num_children); //Happens in all the cases
++	
++	if(limit == 0)
++	{
++		//Store only the number of children into num_children
++		return 0;
++	}
++	else if(limit >= nb_children)
++	{
++		//Copy all children PIDs into list buffer, save the number of children in num_children variable
++		copy_children_from_task_struct(curr, list, nb_children);
++		return 0;
++	}
++	else// if(limit < nb_children)
++	{
++		//Copy the first limit children PIDs into the buffer, save the number of children in num_children
++		copy_children_from_task_struct(curr, list, limit);
++		return -ENOBUFS;
++	}
++}
 diff --git a/kernel/get_unique_id.c b/kernel/get_unique_id.c
-deleted file mode 100644
-index 3614026..0000000
---- a/kernel/get_unique_id.c
-+++ /dev/null
-@@ -1,20 +0,0 @@
--#include <linux/linkage.h>
--#include <linux/uaccess.h>
--#include <linux/atomic.h>
--
--asmlinkage long sys_get_unique_id(int *uuid)
--{
--	// initialize a static atomic counter
--	static atomic_t id = ATOMIC_INIT(0);
--
--	// check wether the address is in the user-space memory
--	if (put_user(0, uuid) != 0)
--		return -EFAULT;
--
--	// increment the counter
--	atomic_inc(&id);
--	put_user(atomic_read(&id), uuid);
--
--	// final return
--	return 0;
--}
+new file mode 100644
+index 0000000..dcc47ca
+--- /dev/null
++++ b/kernel/get_unique_id.c
+@@ -0,0 +1,29 @@
++#include <linux/linkage.h>
++#include <linux/uaccess.h>
++#include <linux/semaphore.h>
++
++asmlinkage long sys_get_unique_id(int *uuid)
++{
++	// initialize a static counter with lock
++	static DEFINE_SPINLOCK(counter_lock);
++	static unsigned int counter = 0;
++
++	// initialize kernel-space var for gathering uuid
++	unsigned int obtained_uuid = 0;
++
++	// check wether the address is in the user-space memory
++	if (put_user(0, uuid) != 0)
++		return -EFAULT;
++
++	// increment the counter and get back the result in kernel space (no interrupt)
++	spin_lock(&counter_lock);
++	counter++;
++	obtained_uuid = counter;
++	spin_unlock(&counter_lock);
++
++	// put result in user space, interruptable
++	put_user(obtained_uuid, uuid);
++
++	// final return
++	return 0;
++}
