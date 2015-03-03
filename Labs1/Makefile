@@ -1,4 +1,4 @@
-all: test_unique_2e7 test_tree_pids
+build: test_unique_2e7 test_tree_pids
 
 test_unique_2e7: test_unique_2e7.o
 	gcc -o test_unique_2e7 test_unique_2e7.o
