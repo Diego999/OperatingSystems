@@ -18,6 +18,7 @@ Supplementary test - test_tree_pids.c
 -------------------------------------
 This test is an automated test we wrote to validate the bonus part of the second syscall - the hierarchical recursive listing of children. It creates a tree of processes (in its current configuration, the tree has depth 3 and each node (process) has 3 direct sub-processes), recording the pids during creation. It then execute the syscall, and work on the result to carefully check that all children have been correctly retrieved. Finally, it displays all theses informations as well as the final result of the automated check, so we can quickly see if the implementation is correct or not. This test is supposed to work with *any* implementation of the syscall, as long as it concords with the minimal requirements given for this assignment.
 
-This two tests compiles with the standard gcc compilation call :
+To compile these 2 tests, simply run make in the folder where .c files and makefile are located.
+This two tests can also be simply compiled with the standard gcc compilation call :
    gcc test_unique_2e7.c -o test_unique_2e7
 for the first test, for example.
