@@ -9,7 +9,7 @@
 // Debug/Release flag -> select only one !
 //#define DEBUG        // select DEBUG (uncomment) to make entire syscall
                        // generate debugging messages in kernel console (printk)
-#define RELEASE        // select RELEASE (uncomment) to make entire syscall
+#define DEBUG        // select RELEASE (uncomment) to make entire syscall
                        // be silent (production)
 
 // Debug message generation macro
@@ -198,6 +198,9 @@ void extract_tree_pids(
 	// initialize out total counter (real_sub_number) to 0
 	*(_out_ker_ptr_real_sub_number) = 0;
 
+	// lock the whole tasklist
+	read_lock(&tasklist_lock);
+
 	// start recursion cascade through the entire subtree of root_proc
 	traverse_tree_rec(
 		_in_ker_ptr_root_proc,
@@ -205,6 +208,9 @@ void extract_tree_pids(
 		&array_current,
 		_out_ker_ptr_real_sub_number,
 		_out_ker_ptr_array_pids);
+
+	// unlock the whole tasklist
+	read_unlock(&tasklist_lock);
 
 	PRINT_DEBUG("end of extract_tree_pids\n");
 
@@ -241,9 +247,6 @@ void traverse_tree_rec(
 
 	PRINT_DEBUG("beginning of traverse_tree_rec\n");
 
-	// lock the root task
-	task_lock(_in_ker_ptr_root_proc);
-
 	// go through the list of children of the root
 	list_for_each_entry(direct_child, &(_in_ker_ptr_root_proc->children),
 		sibling)
@@ -277,9 +280,6 @@ void traverse_tree_rec(
 			_io_ker_ptr_total_nodes_count,
 			_out_ker_ptr_array_pids);
 	}
-
-	// unlock the root task
-	task_unlock(_in_ker_ptr_root_proc);
 
 	PRINT_DEBUG("end of traverse_tree_rec\n");
 

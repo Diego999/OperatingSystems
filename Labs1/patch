@@ -47,7 +47,7 @@ index 17ea6d4..8f16e08 100644
  CFLAGS_REMOVE_cgroup-debug.o = -pg
 diff --git a/kernel/get_child_pids.c b/kernel/get_child_pids.c
 new file mode 100644
-index 0000000..30576e3
+index 0000000..b8512d3
 --- /dev/null
 +++ b/kernel/get_child_pids.c
 @@ -0,0 +1,370 @@
@@ -62,7 +62,7 @@ index 0000000..30576e3
 +// Debug/Release flag -> select only one !
 +//#define DEBUG        // select DEBUG (uncomment) to make entire syscall
 +                       // generate debugging messages in kernel console (printk)
-+#define RELEASE        // select RELEASE (uncomment) to make entire syscall
++#define DEBUG        // select RELEASE (uncomment) to make entire syscall
 +                       // be silent (production)
 +
 +// Debug message generation macro
@@ -251,6 +251,9 @@ index 0000000..30576e3
 +	// initialize out total counter (real_sub_number) to 0
 +	*(_out_ker_ptr_real_sub_number) = 0;
 +
++	// lock the whole tasklist
++	read_lock(&tasklist_lock);
++
 +	// start recursion cascade through the entire subtree of root_proc
 +	traverse_tree_rec(
 +		_in_ker_ptr_root_proc,
@@ -258,6 +261,9 @@ index 0000000..30576e3
 +		&array_current,
 +		_out_ker_ptr_real_sub_number,
 +		_out_ker_ptr_array_pids);
++
++	// unlock the whole tasklist
++	read_unlock(&tasklist_lock);
 +
 +	PRINT_DEBUG("end of extract_tree_pids\n");
 +
@@ -294,9 +300,6 @@ index 0000000..30576e3
 +
 +	PRINT_DEBUG("beginning of traverse_tree_rec\n");
 +
-+	// lock the root task
-+	task_lock(_in_ker_ptr_root_proc);
-+
 +	// go through the list of children of the root
 +	list_for_each_entry(direct_child, &(_in_ker_ptr_root_proc->children),
 +		sibling)
@@ -330,9 +333,6 @@ index 0000000..30576e3
 +			_io_ker_ptr_total_nodes_count,
 +			_out_ker_ptr_array_pids);
 +	}
-+
-+	// unlock the root task
-+	task_unlock(_in_ker_ptr_root_proc);
 +
 +	PRINT_DEBUG("end of traverse_tree_rec\n");
 +
