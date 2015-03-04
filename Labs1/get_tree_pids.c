@@ -9,7 +9,7 @@
 // Debug/Release flag -> select only one !
 //#define DEBUG        // select DEBUG (uncomment) to make entire syscall
                        // generate debugging messages in kernel console (printk)
-#define DEBUG        // select RELEASE (uncomment) to make entire syscall
+#define RELEASE        // select RELEASE (uncomment) to make entire syscall
                        // be silent (production)
 
 // Debug message generation macro

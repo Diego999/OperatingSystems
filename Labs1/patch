@@ -47,7 +47,7 @@ index 17ea6d4..8f16e08 100644
  CFLAGS_REMOVE_cgroup-debug.o = -pg
 diff --git a/kernel/get_child_pids.c b/kernel/get_child_pids.c
 new file mode 100644
-index 0000000..b8512d3
+index 0000000..33ad4ce
 --- /dev/null
 +++ b/kernel/get_child_pids.c
 @@ -0,0 +1,370 @@
@@ -62,7 +62,7 @@ index 0000000..b8512d3
 +// Debug/Release flag -> select only one !
 +//#define DEBUG        // select DEBUG (uncomment) to make entire syscall
 +                       // generate debugging messages in kernel console (printk)
-+#define DEBUG        // select RELEASE (uncomment) to make entire syscall
++#define RELEASE        // select RELEASE (uncomment) to make entire syscall
 +                       // be silent (production)
 +
 +// Debug message generation macro
