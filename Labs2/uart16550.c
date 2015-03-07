@@ -30,37 +30,46 @@ static int behavior = OPTION_BOTH;
 
 static int uart16550_open(struct inode *inode, struct file *filp)
 {
-	int minor = iminor(inode);
-	struct device *current_device = uart16550_device[minor];
-	//Not used now, but might be useful later
-	filp->private_data = NULL; 
+		int minor = iminor(inode);
+		struct device *current_device = uart16550_device[minor];
+		filp->private_data = (void*)current_device; //Associate the device to the filp to read/write
 
-	if((minor == MINOR_COM1 && !mutex_trylock(&com1_mutex)) || (minor == MINOR_COM2 && !mutex_trylock(&com2_mutex)))
-		return -EBUSY;
+		if((minor == MINOR_COM1 && !mutex_trylock(&com1_mutex)) || (minor == MINOR_COM2 && !mutex_trylock(&com2_mutex)))
+			return -EBUSY;
 
-	//Should we test whether the driver is READ & WRITE ?
-	if((filp->f_flag & O_ACCMODE) != O_RDWR))
-		return -EACCES;
-	
-	return 0;
+		//Should we test whether the driver is READ & WRITE ?
+		if((filp->f_flags & O_ACCMODE) != O_RDWR)
+			return -EACCES;
+		
+		return 0;
 }
 
 static int uart16550_close(struct inode* inode, struct file* filp)
 {
-	//Free filp->private_data if necessary
-	if(iminor(inode) == MINOR_COM1)
-		mutex_unlock(&com1_mutex);
-	else if(iminor(inode) == MINOR_COM2)
-		mutex_unlock(&com2_mutex);
+		//Free filp->private_data if necessary
+		if(iminor(inode) == MINOR_COM1)
+			mutex_unlock(&com1_mutex);
+		else if(iminor(inode) == MINOR_COM2)
+			mutex_unlock(&com2_mutex);
 
-	return 0;
+		return 0;
 }
 
-static int uart16550_write(struct file *file, const char *user_buffer,
-        size_t size, loff_t *offset)
+
+static int uart16550_read(struct file *filp, char __user *buff, size_t count, loff_t *offp)
+{
+		struct device *current_device = (struct device*)filp->private_data;
+
+		//unsigned long copy_to_user(void __user* to, const void *from, unsigned long count);
+
+}
+
+static int uart16550_write(struct file *filp, const char *user_buffer, size_t size, loff_t *offset)
 {
         int bytes_copied;
         uint32_t device_port;
+        struct device *current_device = (struct device*)filp->private_data;
+        
         /*
          * TODO: Write the code that takes the data provided by the
          *      user from userspace and stores it in the kernel
@@ -68,6 +77,8 @@ static int uart16550_write(struct file *file, const char *user_buffer,
          * TODO: Populate bytes_copied with the number of bytes
          *      that fit in the outgoing buffer.
          */
+
+        // unsigned long copy_from_user(void *to, const void __user *from, unsigned long count);
 
         uart16550_hw_force_interrupt_reemit(device_port);
 
@@ -117,11 +128,11 @@ static void init_have_com_x(int* have_com1, int* have_com2)
 
 static void init_mutexes(void)
 {
-	int i;
+	/*int i;
 	for(i = 0; i < MAX_NUMBER_DEVICES; ++i)
 	{
-		/*uart16550_mutexes[i] = */__MUTEX_INITIALIZER(uart16550_mutexes[i]);
-	}
+		uart16550_mutexes[i] = __MUTEX_INITIALIZER(uart16550_mutexes[i]);
+	}*/
 }
 
 static int uart16550_init(void)
