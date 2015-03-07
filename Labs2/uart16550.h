@@ -6,6 +6,8 @@
 #define OPTION_BOTH                     3
 
 #define DEFAULT_MAJOR					42
+#define MINOR_COM1						0
+#define MINOR_COM2						1
 
 #define UART16550_COM1_SELECTED         0x01
 #define UART16550_COM2_SELECTED         0x02

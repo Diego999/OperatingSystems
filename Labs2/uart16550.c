@@ -2,6 +2,7 @@
 #include <linux/module.h>
 #include <linux/device.h>
 #include <linux/kdev_t.h>
+#include <linux/fs.h>
 #include <linux/moduleparam.h>
 #include "uart16550.h"
 #include "uart16550_hw.h"
@@ -17,14 +18,43 @@ MODULE_LICENSE("GPL");
 #endif
 
 static struct class *uart16550_class = NULL;
-static struct device *uart16550_device_1 = NULL;
-static struct device *uart16550_device_2 = NULL;
-
+static struct device *uart16550_device[] = {NULL, NULL};
+//static struct mutex uart16550_mutexes[MAX_NUMBER_DEVICES]; Doesn't work, should fine a proper way
+static DEFINE_MUTEX(com1_mutex);
+static DEFINE_MUTEX(com2_mutex);
 /*
  * TODO: Populate major number from module options (when it is given).
  */
 static int major = DEFAULT_MAJOR;
 static int behavior = OPTION_BOTH;
+
+static int uart16550_open(struct inode *inode, struct file *filp)
+{
+	int minor = iminor(inode);
+	struct device *current_device = uart16550_device[minor];
+	//Not used now, but might be useful later
+	filp->private_data = NULL; 
+
+	if((minor == MINOR_COM1 && !mutex_trylock(&com1_mutex)) || (minor == MINOR_COM2 && !mutex_trylock(&com2_mutex)))
+		return -EBUSY;
+
+	//Should we test whether the driver is READ & WRITE ?
+	if((filp->f_flag & O_ACCMODE) != O_RDWR))
+		return -EACCES;
+	
+	return 0;
+}
+
+static int uart16550_close(struct inode* inode, struct file* filp)
+{
+	//Free filp->private_data if necessary
+	if(iminor(inode) == MINOR_COM1)
+		mutex_unlock(&com1_mutex);
+	else if(iminor(inode) == MINOR_COM2)
+		mutex_unlock(&com2_mutex);
+
+	return 0;
+}
 
 static int uart16550_write(struct file *file, const char *user_buffer,
         size_t size, loff_t *offset)
@@ -85,9 +115,19 @@ static void init_have_com_x(int* have_com1, int* have_com2)
 		*have_com2 = (behavior == OPTION_COM1) ? 0 : 1;
 }
 
+static void init_mutexes(void)
+{
+	int i;
+	for(i = 0; i < MAX_NUMBER_DEVICES; ++i)
+	{
+		/*uart16550_mutexes[i] = */__MUTEX_INITIALIZER(uart16550_mutexes[i]);
+	}
+}
+
 static int uart16550_init(void)
 {
         int have_com1, have_com2;
+        int minor;
         /*
          * TODO: Write driver initialization code here.
          * TODO: have_com1 & have_com2 need to be set according to the
@@ -96,6 +136,8 @@ static int uart16550_init(void)
          */
 
         init_have_com_x(&have_com1, &have_com2);
+
+
 
         if(major <= 0)
         	major = DEFAULT_MAJOR;
@@ -107,20 +149,26 @@ static int uart16550_init(void)
         	return PTR_ERR(uart16550_class);
 
         if (have_com1) {
+        		minor = MINOR_COM1;
+        		mutex_init(&com1_mutex);
+
                 /* Setup the hardware device for COM1 */
                 uart16550_hw_setup_device(COM1_BASEPORT, THIS_MODULE->name);
                 /* Create the sysfs info for /dev/com1 */
-                uart16550_device_1 = device_create(uart16550_class, NULL, MKDEV(major, 0), NULL, "com1")
-                if(IS_ERR(uart16550_device_1))
-                	return PTR_ERR(uart16550_device_1);
+                uart16550_device[minor] = device_create(uart16550_class, NULL, MKDEV(major, minor), NULL, "com1");
+                if(IS_ERR(uart16550_device[minor]))
+                	return PTR_ERR(uart16550_device[minor]);
         }
         if (have_com2) {
+        		minor = MINOR_COM2;
+                mutex_init(&com2_mutex);
+
                 /* Setup the hardware device for COM2 */
                 uart16550_hw_setup_device(COM2_BASEPORT, THIS_MODULE->name);
                 /* Create the sysfs info for /dev/com2 */
-                uart16550_device_2 = device_create(uart16550_class, NULL, MKDEV(major, 1), NULL, "com2")
-                if(IS_ERR(uart16550_device_2))
-                	return PTR_ERR(uart16550_device_2);
+                uart16550_device[minor] = device_create(uart16550_class, NULL, MKDEV(major, minor), NULL, "com2");
+                if(IS_ERR(uart16550_device[minor]))
+                	return PTR_ERR(uart16550_device[minor]);
         }
         return 0;
 }
