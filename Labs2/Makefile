@@ -3,6 +3,9 @@ KDIR=/lib/modules/`uname -r`/build
 kbuild:
 	make -C $(KDIR) M=`pwd`
 
+all:
+	make -C $(KDIR) M=`pwd` modules
+
 install:
 	make -C $(KDIR) M=`pwd` modules_install
 

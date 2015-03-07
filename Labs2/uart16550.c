@@ -2,6 +2,7 @@
 #include <linux/module.h>
 #include <linux/device.h>
 #include <linux/kdev_t.h>
+#include <linux/moduleparam.h>
 #include "uart16550.h"
 #include "uart16550_hw.h"
 
@@ -16,10 +17,14 @@ MODULE_LICENSE("GPL");
 #endif
 
 static struct class *uart16550_class = NULL;
+static struct device *uart16550_device_1 = NULL;
+static struct device *uart16550_device_2 = NULL;
+
 /*
  * TODO: Populate major number from module options (when it is given).
  */
-static int major = 42;
+static int major = DEFAULT_MAJOR;
+static int behavior = OPTION_BOTH;
 
 static int uart16550_write(struct file *file, const char *user_buffer,
         size_t size, loff_t *offset)
@@ -73,6 +78,13 @@ irqreturn_t interrupt_handler(int irq_no, void *data)
         return IRQ_HANDLED;
 }
 
+static void init_have_com_x(int* have_com1, int* have_com2)
+{
+		//Assign values corresponding to behavior or set to the default value (OPTION_BOTH)
+		*have_com1 = (behavior == OPTION_COM2) ? 0 : 1;
+		*have_com2 = (behavior == OPTION_COM1) ? 0 : 1;
+}
+
 static int uart16550_init(void)
 {
         int have_com1, have_com2;
@@ -83,22 +95,32 @@ static int uart16550_init(void)
          * TODO: Check return values of functions used. Fail gracefully.
          */
 
+        init_have_com_x(&have_com1, &have_com2);
+
+        if(major <= 0)
+        	major = DEFAULT_MAJOR;
         /*
          * Setup a sysfs class & device to make /dev/com1 & /dev/com2 appear.
          */
         uart16550_class = class_create(THIS_MODULE, "uart16550");
+        if(IS_ERR(uart16550_class))
+        	return PTR_ERR(uart16550_class);
 
         if (have_com1) {
                 /* Setup the hardware device for COM1 */
                 uart16550_hw_setup_device(COM1_BASEPORT, THIS_MODULE->name);
                 /* Create the sysfs info for /dev/com1 */
-                device_create(uart16550_class, NULL, MKDEV(major, 0), NULL, "com1");
+                uart16550_device_1 = device_create(uart16550_class, NULL, MKDEV(major, 0), NULL, "com1")
+                if(IS_ERR(uart16550_device_1))
+                	return PTR_ERR(uart16550_device_1);
         }
         if (have_com2) {
                 /* Setup the hardware device for COM2 */
                 uart16550_hw_setup_device(COM2_BASEPORT, THIS_MODULE->name);
                 /* Create the sysfs info for /dev/com2 */
-                device_create(uart16550_class, NULL, MKDEV(major, 1), NULL, "com2");
+                uart16550_device_2 = device_create(uart16550_class, NULL, MKDEV(major, 1), NULL, "com2")
+                if(IS_ERR(uart16550_device_2))
+                	return PTR_ERR(uart16550_device_2);
         }
         return 0;
 }
@@ -111,6 +133,9 @@ static void uart16550_cleanup(void)
          * TODO: have_com1 & have_com2 need to be set according to the
          *      module parameters.
          */
+
+		init_have_com_x(&have_com1, &have_com2);
+
         if (have_com1) {
                 /* Reset the hardware device for COM1 */
                 uart16550_hw_cleanup_device(COM1_BASEPORT);
@@ -131,5 +156,9 @@ static void uart16550_cleanup(void)
         class_destroy(uart16550_class);
 }
 
+module_param(major, int, S_IRUGO);
+MODULE_PARM_DESC(major, "The major number of the character device which will be used to interact with the driver. Default value : 42.");
+module_param(behavior, int, S_IRUGO);
+MODULE_PARM_DESC(behavior, "Wheter the driver should connect to COM1, COM2 or both. Default value : BOTH. Values are 0x01, 0x02 or 0x03.");
 module_init(uart16550_init)
 module_exit(uart16550_cleanup)
