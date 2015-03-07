@@ -1,0 +1,24 @@
+Operating systems - assignment 1
+--------------------------------
+   by Diego Antognini and Jason Racine
+
+First syscall - get_unique_id
+-----------------------------
+To generate a unique id, we use a simple counter which is atomically accessed and incremented at each call. The ID stays system-wide unique during execution until next reboot or reaching the max_size of int (2^31).
+
+Second syscall - get_child_pids
+-------------------------------
+The child PIDs of the current user process are obtained through the get_current() kernel method, by traversing its children sublist with kernel linked list functions. Management of the limit/num_children constraints is done by simple if/else. This implementation is recursively implemented (bonus part), so that all children in the sub-hierarchy of the calling kernel are retrieved, not only the direct children.
+
+Supplementary test - test_unique_2e7.c
+--------------------------------------
+This test is an automated test we wrote, after knowing that your test routines use to call for 2*10^7 (2e7) successive uuids. It makes a similar number of calls, automatically checking that uuid is always incremented. The purpose of this test is to validate *our* implementation of the corresponding syscall, not to detect problems in *any* implementation.
+
+Supplementary test - test_tree_pids.c
+-------------------------------------
+This test is an automated test we wrote to validate the bonus part of the second syscall - the hierarchical recursive listing of children. It creates a tree of processes (in its current configuration, the tree has depth 3 and each node (process) has 3 direct sub-processes), recording the pids during creation. It then execute the syscall, and work on the result to carefully check that all children have been correctly retrieved. Finally, it displays all theses informations as well as the final result of the automated check, so we can quickly see if the implementation is correct or not. This test is supposed to work with *any* implementation of the syscall, as long as it concords with the minimal requirements given for this assignment.
+
+To compile these 2 tests, simply run make in the folder where .c files and makefile are located.
+This two tests can also be simply compiled with the standard gcc compilation call :
+   gcc test_unique_2e7.c -o test_unique_2e7
+for the first test, for example.

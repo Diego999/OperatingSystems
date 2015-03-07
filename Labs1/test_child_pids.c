@@ -9,7 +9,7 @@
 #define N 10
 
 inline long get_child_pids(pid_t* buf, size_t limit, size_t* num_children) {
-	return syscall(__NR_get_child_pids_id, buf, limit, &num_children) ? errno : 0;
+	return syscall(__NR_get_child_pids_id, buf, limit, num_children) ? errno : 0;
 }
 
 void print_list(pid_t* list, size_t limit) {
@@ -25,10 +25,10 @@ int main () {
 	if (child_pid < 0 )
 	    printf("Fork failed %i \n", child_pid);
 	else if (child_pid > 0) {
+		printf("Child PID after fork is %u\n", child_pid);
 		size_t limit = 3;
 		size_t nr_children;
 		pid_t pid_list[limit]; // to store our results
-
 
 		// CASE : Arbitrary address for num_children
 		res = get_child_pids(pid_list, limit, (size_t*)47424742);

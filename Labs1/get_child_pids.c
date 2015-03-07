@@ -4,33 +4,39 @@
 
 size_t count_children_from_task_struct(struct task_struct* curr) 
 {
+	//printk("now executing count_children_from_task_struct\n");
 	struct list_head* pos;
 	size_t counter = 0;
 	
 	task_lock(curr);
 
-	list_for_each(pos, &curr->children)
+	list_for_each(pos, &(curr->children))
 	{
-		printk("%d\n", counter);
-		++counter;
+		counter++;
+		//printk("    counter is now %d\n", counter);
 	}
 	
 	task_unlock(curr);
 
+	//printk("    just before returning, counter is %d\n", counter);
 	return counter;
 }
 
 void copy_children_from_task_struct(struct task_struct* curr, pid_t* list_dst, size_t n)
 {
+	//printk("executing copy_children_from_task_struct\n");
 	struct task_struct* tmp;
 	size_t i = 0;
 
 	task_lock(curr);
 
-	list_for_each_entry(tmp, &curr->children, children)
+	list_for_each_entry(tmp, &(curr->children), sibling)
 	{
+		//printk("    child pid found : %d\n", tmp->pid);
 		if(i < n)
+		{
 			list_dst[i++] = tmp->pid;
+		}
 	}
 
 	task_unlock(curr);
@@ -54,11 +60,12 @@ asmlinkage long sys_get_child_pids(pid_t* list, size_t limit, size_t* num_childr
 	if((list == NULL && limit != 0) || (put_user(0, list) != 0))
 		return -EFAULT;
 
+	//printk("putting nb_children(=%d) into num_children\n", nb_children);
 	put_user(nb_children, num_children); //Happens in all the cases
 	
 	if(limit == 0)
 	{
-		//Sotre only the number of children into num_children
+		//Store only the number of children into num_children
 		return 0;
 	}
 	else if(limit >= nb_children)
@@ -73,5 +80,4 @@ asmlinkage long sys_get_child_pids(pid_t* list, size_t limit, size_t* num_childr
 		copy_children_from_task_struct(curr, list, limit);
 		return -ENOBUFS;
 	}
-
 }
