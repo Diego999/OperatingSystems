@@ -136,7 +136,7 @@ static int uart16550_init(void)
          */
 
         init_have_com_x(&have_com1, &have_com2);
-
+        init_mutexes();
 
 
         if(major <= 0)
