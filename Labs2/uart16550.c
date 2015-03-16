@@ -166,7 +166,7 @@ static int uart16550_mod_init(void)
 		case OPTION_COM1:
 			have_com1 = 1;
 			have_com2 = 0;
-			if ((err_code = register_chrdev_region(MKDEV(major,0), 1, "com1"))
+			if ((err_code = register_chrdev_region(MKDEV(major,0), 1, "uart16550"))
 				!= 0)
 			{
 				unregister_chrdev_region(MKDEV(major,0), 1);
@@ -176,7 +176,7 @@ static int uart16550_mod_init(void)
 		case OPTION_COM2:
 			have_com1 = 0;
 			have_com2 = 1;
-			if ((err_code = register_chrdev_region(MKDEV(major,1), 1, "com2"))
+			if ((err_code = register_chrdev_region(MKDEV(major,1), 1, "uart16550"))
 				!= 0)
 			{
 				unregister_chrdev_region(MKDEV(major,1), 1);
@@ -186,7 +186,7 @@ static int uart16550_mod_init(void)
 		case OPTION_BOTH:
 			have_com1 = 1;
 			have_com2 = 1;
-			if ((err_code = register_chrdev_region(MKDEV(major,0), 2, "both"))
+			if ((err_code = register_chrdev_region(MKDEV(major,0), 2, "uart16550"))
 				!= 0)
 			{
 				unregister_chrdev_region(MKDEV(major,0), 2);
@@ -562,7 +562,7 @@ static long uart16550_fop_ioctl(struct file* file, unsigned int op,
 		case UART16550_IOCTL_SET_LINE:
 			return uart16550_fop_ioctl_set_line(file, arg);
 		default:
-			return 0;
+			return -EPERM;
 	}
 }
 
@@ -784,7 +784,7 @@ static int uart16550_device_init(struct uart16550_device* device,
 	uart16550_buffer_init(&(device->buffer_out));
 
 	// Request for corresponding interrupts
-	if (request_irq(irq_no, uart16550_interrupt_handler, IRQF_SHARED, name,
+	if (request_irq(irq_no, uart16550_interrupt_handler, IRQF_SHARED, "uart16550",
 		device) != 0)
 	{
 		dprintk("  -> request for interrupts on IRQ%d (COM%d) FAILED\n",
