@@ -1,0 +1,22 @@
+EPFL - Operating systems
+Lab 2 : Serial port driver
+--------------------------
+
+Team 1 - Diego Antognini & Jason Racine
+
+Here are some of our implementation details about particular mechanisms :
+
+1. functions separation
+-----------------------
+In the template, we were given the functions at module-level (init, cleanup) and file-level (open, close, etc...) in uart16550.c, and the very low-level functions for managing hardware in uart16550_hw.h. We extended these separations by setting up a third level in-between, which are all the uart16550_device_XXX functions in uart16550.c. These functions manage a "virtual device" at the driver level, managing all the problems of synchronization and concurrent accesses, thus not polluting the very high-level and conceptual functions responding as handlers for file operations (uart16550_fop_XXX).
+
+2. how we deal with concurrency
+-------------------------------
+We use several stages of locks and condition variables to deal properly with concurrency issues.
+   - a boolean variable (actually int) protected by a spinlock is used to prevent multiple openings of the same device by different processes
+   - for each buffer, we use 3 distinct elements to address all synchronization issues :
+      - a spinlock is used (and must be acquired) to read/write into the fifo
+      - a semaphore (condition variable) is initialized with a value of "0", used to sleep without spinning when a function must wait for data to enter (or
+      	leave) corresponding buffer
+      - a boolean variable (actually int) protected by the same spinlock as the fifo part of the buffer, is used as a flag to allow interrupt handler to
+      	know when to up() the corresponding semaphore, thus liberating the waiting function. We do this to ensure that the semaphore is never raised above 0, otherwise a function calling down() to start sleeping will just walk away...
