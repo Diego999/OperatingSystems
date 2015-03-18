@@ -160,6 +160,13 @@ static int uart16550_mod_init(void)
 	dprintk("  -> major = %d\n", major);
 	dprintk("  -> behavior = %d\n", behavior);
 
+	// Correct major number
+	// major is assumed on 12 bits as said in doc, 2^12=4096 numbers representable
+	if (major<0 || major > 4095)
+	{
+		return -EINVAL;
+	}
+
 	// Set have_com1 and have_com2 and create char device region in memory
 	switch (behavior)
 	{
