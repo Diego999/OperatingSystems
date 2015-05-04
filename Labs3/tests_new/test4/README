@@ -1,0 +1,13 @@
+This tests if preemption works correctly when a new task with a higher priority is created. 
+A task is started with the priority of 15. 
+It creates a child task (initially with the same priority), and then sets its priority to 11. 
+At this point, the child should take over and execute until completion, because
+the age threshold is set high. 
+Only then should the parent finish. 
+The output should look like this:
+
+Parent started
+Child started
+....................................................................................................
+Child done
+Parent done

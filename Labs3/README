@@ -9,9 +9,9 @@ Multilevel
 
 We directly modify dummy_rq, the field queue to
 struct list_head queue[5]
-to have our 5 levels (131-135). The index 0 correspond to 131 and the index 4 135.
+to have our 5 levels (131-135). The index 0 correspond to 131 and the index 4 to 135.
 
-When we enqueue a task, we compute in which queue we have to enqueue it.
+When we enqueue a task, we compute the ID of queue in which we have to enqueue it.
 
 RR
 --
@@ -20,28 +20,26 @@ We have modified in include/linux/sched.h the struct sched_dummy_entity to add t
 time_slice.
 
 With this, we can define an amount of TICK (quantum) for each task. This amount represent the number of TICKs a task has in one batch of CPU.
-When a task has got the CPU during all this amount, we dequeue it and enqueue it at the end of the same queue, to let the next task to be loaded.
- for the RR.
+When a task has been running the CPU during this whole amount, we dequeue it and then re-enqueue it at the end of the same queue, to let the next task be loaded for the RR.
 
 Aging
 -----
 
-We have modified include/linux/Sched.h the struct sched_dummy_entity to add :
+We have modified in include/linux/Sched.h the struct sched_dummy_entity to add :
 - time_aging, which corresponds to the counter (in TICK) where the task was the lowest one. When this counter reaches the threshold, we increase the priority within the next field : prio
 
-- prio, priority, which might be not the real one. Modifiy the priority in task_Struct gave us a lot of kernel panic. Moreover, because there exists 3 different kind of 
-priority, changing one will change the other. It is safer to have "our" prio for the aging because we won't make some inconsitencies. Prio could be higher than the real one, 
-only when a task ages. When an aged task has been process, we reinitialize prio to the current priority (which was the one before the aging).
+- prio, priority, which might be not the real one. Modify the priority in task_Struct gave us a lot of kernel panic. Moreover, because there exists 3 different kind of 
+priority, changing one will change the other. It is safer to have "our" prio for the aging because we won't make some inconsistencies. Prio could be higher than the real one, only when a task ages. When an aged task has been processed, we reinitialize prio to the current priority (which was the one before the aging).
 
 Yield
 -----
 
-In the corresponding function, we simply enqueue the task to the end of its corresponding queue. We know that the task wants to give the CPU. In this manner, except it is the only one, another process will be loaded.
+In the corresponding function, we simply enqueue the task to the end of its corresponding queue. We know that the task wants to give the CPU. In this manner, another process will be loaded, except if it is the only one.
 
 Check preempt
 -------------
 
-We simply check in the queues if there exists a task with a higher priority. If it is the case, we preemt the current process and an higher one will be loaded.
+We simply check in the queues if there exists a task with a higher priority. If it is the case, we preempt the current process and an higher one will be loaded.
 
 pick_next_task
 --------------

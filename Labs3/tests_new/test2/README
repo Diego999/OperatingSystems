@@ -1,0 +1,7 @@
+Here we have three processes with different priorities. 
+At the beginning, A should get most of the CPU with B and C getting an occasional timeslice due to ageing. 
+B should get the CPU twice as often as C. 
+After A finishes, B gets most of the CPU, with C getting its timeslices due to ageing. Then B finishes and C executes alone.
+Output should look roughly like this:
+
+AAAAAAAAAABBBBAAAAAAAAACCCBBBAAAAAAAAABBBAAACCCAAABBAAAAAAAABBBAAACCCAAABBBAAAAAAAAABBBAAACCCAAABBBAAAAAAAAABBBAACCCAAAABBBAAAAAAAAABBBAAACCCAAABBBAAAAAAABBBCCCBBBBBBCCCBBBBBBBBBBCCCBBBBBBBBBCCCCBBBBBBBBBBCCCBBBBBBBBBBCCCBBBBBBBBBBCCCBBBBBBCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC

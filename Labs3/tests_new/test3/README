@@ -1,0 +1,6 @@
+This tests the sched_yield system call. 
+The two processes have the same priority and timeslice is set to be longer than the test lasts. 
+Therefore, the only context switching should be due to yield calls.
+The output should look like this:
+
+BABABABABABABABABABA

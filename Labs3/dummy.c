@@ -5,7 +5,7 @@
 #include "sched.h"
 
 /*
- * Timeslice and age threshold are repsented in jiffies. Default timeslice
+ * Timeslice and age threshold are represented in jiffies. Default timeslice
  * is 100ms. Both parameters can be tuned from /proc/sys/kernel.
  */
 

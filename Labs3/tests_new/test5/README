@@ -1,0 +1,32 @@
+This tests if preemption works correctly when a task with a higher priority wakes up. 
+Child A has higher priority and executes until it starts to sleep (age threshold is high again). 
+Child B gets the CPU while A is sleeping. 
+When A wakes up, it gets the CPU again and executes until completion.
+
+You shouldn't have the situation where B is executing while A is awake. 
+If you instrument your enqueue_task_dummy and dequeue_task_dummy to print something to console, for example:
+
+printk(KERN_CRIT "enqueue: %d\n",p->pid);
+
+and you go to a console mode (right Ctrl + F1)
+
+then the output should look something like this:
+
+[  406.183846] enqueue: 2356
+[  406.184081] enqueue: 2357
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA[  406.711407] dequeue: 2356
+BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB[  407.711423] enqueue: 2356
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA[  408.894284] dequeue: 2356
+[  408.895767] enqueue: 2356
+[  408.896017] dequeue: 2356
+BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB[  409.338978] dequeue: 2357
+[  409.340343] enqueue: 2357
+[  409.341059] dequeue: 2357
+
+The first pair of enqueues is when the two tasks first enter dummy scheduler, during the setpriority system call.
+Then A executes until it is dequeued for the sleep.
+Then B executes until A wakes up and is enqueued again.
+Then A executes until end and goes through dequeue-enqueue-dequeue sequence for deactivation; then the same for B.
+
+To returm from the console mode, press rigth Ctrl + F7.
+
