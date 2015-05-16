@@ -1,0 +1,33 @@
+Status of our implementation
+----------------------------
+
+1. Read the first 512 bytes of the device
+   => fully working
+
+2. Parse BPB sector, read basic information and verify the filesystem is FAT32, export via .debug
+   => fully working
+
+3. Locate and read raw data from the corret FAT table and follow cluster allocation chains
+   => fully working
+
+4. Implement basic root directory parsing, enumerate raw entries until final entry
+   => fully working
+
+5. Implement basic short entry handling, parse short names, attributes, size, first cluster
+   => fully working
+
+6. Add an ability to read the content of a file and a directory given the number of their first cluster
+   => fully working
+
+7. Integrate with fuse, fill stat entries, read top-level files
+   => fully working
+
+8. Add multi-level directory resolution, traverse directory structure
+   => fully working
+
+9. Add support for long names
+   => fully working
+
+10. Fill other stat fields (atime/mtime/ctime)
+    => (almost) fully working
+       fields are filled by data, parsing seems correct, but vmchecker tests don't pass

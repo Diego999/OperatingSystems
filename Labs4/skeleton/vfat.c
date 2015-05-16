@@ -15,6 +15,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <time.h>
 
 #include "vfat.h"
 #include "util.h"
@@ -33,6 +34,28 @@ uint32_t FirstSectorofCluster(uint32_t N)
 uint8_t* ClusterMapped(uint32_t N)
 {
     return (uint8_t*)mmap_file(vfat_info.fd, FirstSectorofCluster(N)*vfat_info.bytes_per_sector, vfat_info.cluster_size);
+}
+
+void ClusterUnmap(uint8_t* cluster)
+{
+    unmap((void*)cluster, vfat_info.cluster_size);
+}
+
+time_t BuildTime(uint16_t inputDate, uint16_t inputTime, uint8_t inputTenth)
+{
+    // Build temporary time structure
+    struct tm preciseTime;
+    preciseTime.tm_year = (inputDate >> 9) + 80;
+    preciseTime.tm_mon = ((inputDate >> 5) & 0x000F) - 1;
+    preciseTime.tm_mday = inputDate & 0x001F;
+    preciseTime.tm_hour = inputTime >> 11;
+    preciseTime.tm_min = (inputTime >> 5) & 0x003F;
+    preciseTime.tm_sec = (inputTime & 0x001F) * 2 + (inputTenth / 10);
+
+    // Build final time structure
+    time_t result = mktime(&preciseTime);
+
+    return result;
 }
 
 void print_boot_sector(struct fat_boot_header s)
@@ -196,8 +219,6 @@ int vfat_next_cluster(uint32_t c)
 
 int vfat_readdir(uint32_t first_cluster, fuse_fill_dir_t callback, void *callbackdata)
 {
-    printf("vfat_readdir at cluster %d\n", first_cluster);
-
     // We can reuse same stat entry over and over again
     struct stat st;
     memset(&st, 0, sizeof(st));
@@ -212,134 +233,117 @@ int vfat_readdir(uint32_t first_cluster, fuse_fill_dir_t callback, void *callbac
 
     // Buffer for storing short names
     unsigned char* shortName = (unsigned char*)calloc(13, sizeof(unsigned char));
+    int j;
 
-    // Load cluster data
-    uint8_t* cluster = ClusterMapped(first_cluster);
+    // Cluster variable
+    uint32_t clusterId = (first_cluster & 0x0FFFFFFF);
 
-    // Interpret cluster as fat32_direntry and fat32_direntry_long
-    struct fat32_direntry* direntries = (struct fat32_direntry*)cluster;
-    struct fat32_direntry_long* direntrieslong = (struct fat32_direntry_long*)cluster;
-
-    // Go through direntries of the cluster
-    size_t i;
-    for (i=0; i<vfat_info.direntry_per_cluster; i++)
+    // Loop on clusters
+    while ((clusterId > 0x00000001) && (clusterId < 0x0FFFFFF0))
     {
-        // If directory entry is empty
-        if (direntries[i].name[0] == 0xE5)
-        {
-            continue;
-        }
+        // Load cluster data
+        uint8_t* cluster = ClusterMapped(clusterId);
 
-        // If directory entry is empty and no other is full
-        if (direntries[i].name[0] == 0x00)
-        {
-            break;
-        }
+        // Interpret cluster as fat32_direntry and fat32_direntry_long
+        struct fat32_direntry* direntries = (struct fat32_direntry*)cluster;
+        struct fat32_direntry_long* direntrieslong = (struct fat32_direntry_long*)cluster;
 
-        // Correct special char
-        if (direntries[i].name[0] == 0x05)
-        {
-            direntries[i].name[0] = 0xE5;
-        }
+        // Marker of deletion
+        int isDeleted = 0;
 
-        // If directory entry is long name
-        if ((direntries[i].attr & 0x0F) == 0x0F)
+        // Go through direntries of the cluster
+        size_t i;
+        for (i=0; i<vfat_info.direntry_per_cluster; i++)
         {
-            // Read long name parts
-            longNamePart[0] = direntrieslong[i].name1[0];
-            longNamePart[1] = direntrieslong[i].name1[1];
-            longNamePart[2] = direntrieslong[i].name1[2];
-            longNamePart[3] = direntrieslong[i].name1[3];
-            longNamePart[4] = direntrieslong[i].name1[4];
-            longNamePart[5] = direntrieslong[i].name2[0];
-            longNamePart[6] = direntrieslong[i].name2[1];
-            longNamePart[7] = direntrieslong[i].name2[2];
-            longNamePart[8] = direntrieslong[i].name2[3];
-            longNamePart[9] = direntrieslong[i].name2[4];
-            longNamePart[10] = direntrieslong[i].name2[5];
-            longNamePart[11] = direntrieslong[i].name3[0];
-            longNamePart[12] = direntrieslong[i].name3[1];
-
-            // Search for \0
-            size_t zeropos = 0;
-            for (zeropos = 0; zeropos < 13; zeropos++)
+            // If directory entry is empty
+            if (direntries[i].name[0] == 0xE5)
             {
-                if (longNamePart[zeropos] == '\0')
+                continue;
+            }
+
+            // If directory entry is empty and no other is full
+            if (direntries[i].name[0] == 0x00)
+            {
+                break;
+            }
+
+            // If directory entry is long name
+            if ((direntries[i].attr & 0x0F) == 0x0F)
+            {
+                // Read long name parts
+                longNamePart[0] = direntrieslong[i].name1[0];
+                longNamePart[1] = direntrieslong[i].name1[1];
+                longNamePart[2] = direntrieslong[i].name1[2];
+                longNamePart[3] = direntrieslong[i].name1[3];
+                longNamePart[4] = direntrieslong[i].name1[4];
+                longNamePart[5] = direntrieslong[i].name2[0];
+                longNamePart[6] = direntrieslong[i].name2[1];
+                longNamePart[7] = direntrieslong[i].name2[2];
+                longNamePart[8] = direntrieslong[i].name2[3];
+                longNamePart[9] = direntrieslong[i].name2[4];
+                longNamePart[10] = direntrieslong[i].name2[5];
+                longNamePart[11] = direntrieslong[i].name3[0];
+                longNamePart[12] = direntrieslong[i].name3[1];
+
+                // Search for \0
+                size_t zeropos = 0;
+                for (zeropos = 0; zeropos < 13; zeropos++)
                 {
-                    break;
-                }
-            }
-            ssize_t currpos = 0;
-
-            // Extend long name storage
-            longNameSize += zeropos;
-            longName = realloc(longName, longNameSize * sizeof(unsigned char));
-
-            // Shift all previous content to right
-            for (currpos = longNameSize - zeropos - 1; (currpos >= 0) && (longNameSize - zeropos > 0); currpos--)
-            {
-                longName[currpos + zeropos] = longName[currpos];
-            }
-
-            // Copy all chars before \0
-            for (currpos = 0; currpos < zeropos; currpos++)
-            {
-                longName[currpos] = longNamePart[currpos];
-            }
-        }
-
-        // If directory entry is standard directory entry
-        else
-        {
-            // Fill in status infos
-            st.st_ino = (((uint32_t)(direntries[i].cluster_hi)) << 16) | ((uint32_t)(direntries[i].cluster_lo));
-            st.st_mode = 0555;
-            if ((direntries[i].attr & 0x10) == 0x10)
-            {
-                st.st_mode = st.st_mode | S_IFDIR;
-            }
-            st.st_size = direntries[i].size;
-            
-            // TODO
-            // st_atime
-            // st_mtime
-            // st_ctime
-
-            // Define name pointer
-            unsigned char* name = NULL;
-
-            // If long name
-            if (longName != NULL)
-            {
-                ssize_t sizeExt = 0;
-                for (sizeExt = 0; sizeExt <= 3; sizeExt++)
-                {
-                    if (direntries[i].ext[sizeExt] == '\0' || direntries[i].ext[sizeExt] == ' ')
+                    if (longNamePart[zeropos] == '\0')
                     {
                         break;
                     }
                 }
-                if (sizeExt > 0)
+                ssize_t currpos = 0;
+
+                // Extend long name storage
+                longNameSize += zeropos;
+                longName = realloc(longName, longNameSize * sizeof(unsigned char));
+
+                // Shift all previous content to right
+                for (currpos = longNameSize - zeropos - 1; (currpos >= 0) && (longNameSize - zeropos > 0); currpos--)
                 {
-                    sizeExt += 1;
+                    longName[currpos + zeropos] = longName[currpos];
                 }
-                longName = realloc(longName, (longNameSize+sizeExt+1) * sizeof(unsigned char));
-                if (sizeExt > 0)
+
+                // Copy all chars before \0
+                for (currpos = 0; currpos < zeropos; currpos++)
                 {
-                    longName[longNameSize] = '.';
+                    longName[currpos] = longNamePart[currpos];
                 }
-                ssize_t sizeCnt;
-                for (sizeCnt = 0; sizeCnt < sizeExt-1; sizeCnt++)
-                {
-                    longName[longNameSize + 1 + sizeCnt] = direntries[i].ext[sizeCnt];
-                }
-                longName[longNameSize+sizeExt] = '\0';
-                name = longName;
             }
 
-            // If short name
+            // If directory entry is VOLUME_ID directory entry
+            else if ((direntries[i].attr & 0x08) == 0x08)
+            {
+                // Do nothing
+            }
+
+            // If directory entry is standard directory entry
             else
             {
+                // Fill in status infos
+                st.st_ino = (((uint32_t)(direntries[i].cluster_hi)) << 16) | ((uint32_t)(direntries[i].cluster_lo));
+                st.st_mode = 0555;
+                if ((direntries[i].attr & 0x10) == 0x10)
+                {
+                    st.st_mode = st.st_mode | S_IFDIR;
+                }
+                else
+                {
+                    st.st_mode = st.st_mode | S_IFREG;
+                }
+                st.st_size = direntries[i].size;
+
+                // Convert dates
+                st.st_atime = BuildTime(direntries[i].atime_date, 0, 0);
+                st.st_mtime = BuildTime(direntries[i].mtime_date, direntries[i].mtime_time, 0);
+                st.st_ctime = BuildTime(direntries[i].ctime_date, direntries[i].ctime_time, direntries[i].ctime_ms);
+
+                // Define name pointer
+                unsigned char* name = NULL;
+
+                // Build short name
                 ssize_t sizeCnt = 0;
                 while ((sizeCnt < 8) && (direntries[i].name[sizeCnt] != ' '))
                 {
@@ -358,20 +362,59 @@ int vfat_readdir(uint32_t first_cluster, fuse_fill_dir_t callback, void *callbac
                     sizeCnt++;
                 }
                 shortName[sizeCnt] = '\0';
-                name = shortName;
-            }
 
-            // Callback
-            callback(callbackdata, (const char*)name, &st, 0);
+                // Check for deletion in short name
+                for (j=0; j<sizeCnt; j++)
+                {
+                    if (shortName[j] == 0xE5)
+                    {
+                        isDeleted = 1;
+                    }
+                }
 
-            // Free long name
-            if (longName != NULL)
-            {
-                free(longName);
-                longName = NULL;
-                longNameSize = 0;
+                // If long name
+                if (longName != NULL)
+                {
+                    longName = realloc(longName, (longNameSize+1) * sizeof(unsigned char));
+                    longName[longNameSize] = '\0';
+                    for (j=0; j<longNameSize; j++)
+                    {
+                        if (longName[j] == 0xE5)
+                        {
+                            isDeleted = 1;
+                        }
+                    }
+                    name = longName;
+                }
+
+                // If short name
+                else
+                {
+                    name = shortName;
+                }
+
+                // Callback
+                if (isDeleted == 0)
+                {
+                    callback(callbackdata, (const char*)name, &st, 0);
+                }
+                isDeleted = 0;
+
+                // Free long name
+                if (longName != NULL)
+                {
+                    free(longName);
+                    longName = NULL;
+                    longNameSize = 0;
+                }
             }
         }
+
+        // Unmap cluster
+        ClusterUnmap(cluster);
+
+        // Go to next cluster
+        clusterId = vfat_next_cluster(clusterId);
     }
 
     return 0;
@@ -408,29 +451,80 @@ int vfat_search_entry(void *data, const char *name, const struct stat *st, off_t
 */
 int vfat_resolve(const char *path, struct stat *st)
 {
-    /* TODO: Add your code here.
-        You should tokenize the path (by slash separator) and then
-        for each token search the directory for the file/dir with that name.
-        You may find it useful to use following functions:
-        - strtok to tokenize by slash. See manpage
-        - vfat_readdir in conjuction with vfat_search_entry
-    */
-    int res = -ENOENT; // Not Found
-    if (strcmp("/", path) == 0) {
-        *st = vfat_info.root_inode;
-        res = 0;
+    // Temporary stat structure to fill in, initialized with root inode
+    struct stat myStat;
+    myStat = vfat_info.root_inode;
+
+    // Temporary vfat_search_data structure
+    struct vfat_search_data searchData;
+    searchData.name = NULL;
+    searchData.found = 0;
+    searchData.st = (struct stat*)malloc(sizeof(struct stat));
+
+    // Tokenize the string
+    char* token;
+    token = strtok((char*)path, "/");
+
+    // For each token ("folder")
+    while (token != NULL)
+    {
+        // Read the parent dir and search for it
+        searchData.name = token;
+        vfat_readdir(myStat.st_ino, vfat_search_entry, (void*)(&searchData));
+
+        // If dest found
+        if (searchData.found == 1)
+        {
+            // Copy stat into my stat
+            myStat = *(searchData.st);
+
+            // Cancel found
+            searchData.found = 0;
+
+            // If it is a file
+            if ((myStat.st_mode & S_IFDIR) == 0)
+            {
+                // Check next token is NULL
+                token = strtok(NULL, "/");
+                if (token == NULL)
+                {
+                    break;
+                }
+                else
+                {
+                    free(searchData.st);
+                    return -ENOTDIR;
+                }
+            }
+        }
+
+        // If dest not found
+        else
+        {
+            return -ENOENT;
+        }
+
+        // Next token
+        token = strtok(NULL, "/");
     }
-    return res;
+
+    // Put stat in output
+    free(searchData.st);
+    *st = myStat;
+    return 0;
 }
 
 // Get file attributes
 int vfat_fuse_getattr(const char *path, struct stat *st)
 {
+    // Virtual debug filesystem
     if (strncmp(path, DEBUGFS_PATH, strlen(DEBUGFS_PATH)) == 0) {
-        // This is handled by debug virtual filesystem
         return debugfs_fuse_getattr(path + strlen(DEBUGFS_PATH), st);
-    } else {
-        // Normal file
+    }
+    
+    // Real FAT filesystem
+    else
+    {
         return vfat_resolve(path, st);
     }
 }
@@ -458,17 +552,28 @@ int vfat_fuse_readdir(
         const char *path, void *callback_data,
         fuse_fill_dir_t callback, off_t unused_offs, struct fuse_file_info *unused_fi)
 {
+    // Virtual debug filesystem
     if (strncmp(path, DEBUGFS_PATH, strlen(DEBUGFS_PATH)) == 0) {
-        // This is handled by debug virtual filesystem
         return debugfs_fuse_readdir(path + strlen(DEBUGFS_PATH), callback_data, callback, unused_offs, unused_fi);
     }
-    else if (strncmp(path, "/", 1) == 0)
+
+    // Real FAT filesystem
+    else
     {
-        printf("vfat_fuse_readdir in /\n");
-        return vfat_readdir(vfat_info.root_inode.st_ino, callback, callback_data);
+        struct stat dirStat;
+
+        // If path can be resolved to a stat structure
+        if (vfat_resolve(path, &dirStat) == 0)
+        {
+            return vfat_readdir(dirStat.st_ino, callback, callback_data);
+        }
+
+        // If path cannot be resolved
+        else
+        {
+            return -errno;
+        }
     }
-    /* TODO: Add your code here. You should reuse vfat_readdir and vfat_resolve functions
-    */
     return 0;
 }
 
@@ -476,13 +581,89 @@ int vfat_fuse_read(
         const char *path, char *buf, size_t size, off_t offs,
         struct fuse_file_info *unused)
 {
-    if (strncmp(path, DEBUGFS_PATH, strlen(DEBUGFS_PATH)) == 0) {
-        // This is handled by debug virtual filesystem
+    // Virtual debug filesystem
+    if (strncmp(path, DEBUGFS_PATH, strlen(DEBUGFS_PATH)) == 0)
+    {
         return debugfs_fuse_read(path + strlen(DEBUGFS_PATH), buf, size, offs, unused);
     }
-    /* TODO: Add your code here. Look at debugfs_fuse_read for example interaction.
-    */
-    return 0;
+
+    // Real FAT filesystem
+    else
+    {
+        struct stat fileStat;
+
+        // If path can be resolved to a stat structure
+        if (vfat_resolve(path, &fileStat) == 0)
+        {
+            // Determine theoretical cluster # in clusters chain
+            size_t startClusterNumber = offs / vfat_info.cluster_size;
+
+            // Find cluster number
+            uint32_t clusterId = fileStat.st_ino & 0x0FFFFFFF;
+            size_t clusterNumber;
+            for (clusterNumber = 0; clusterNumber < startClusterNumber; clusterNumber++)
+            {
+                clusterId = vfat_next_cluster(clusterId) & 0x0FFFFFFF;
+
+                // Reached end cluster
+                if ((clusterId <= 0x00000001) || (clusterId >= 0x0FFFFFF0))
+                {
+                    return 0;
+                }
+            }
+
+            // Prepare buffer
+            char* tmpbuff = (char*)calloc(size, sizeof(char));
+
+            // Compute offset inside cluster
+            off_t innerOffset = offs % vfat_info.cluster_size;
+
+            // Read size
+            size_t readSize = 0;
+
+            // Loop on clusters
+            while ((clusterId > 0x00000001) && (clusterId < 0x0FFFFFF0))
+            {
+                // Load cluster data
+                uint8_t* cluster = ClusterMapped(clusterId);
+
+                // Start reading at innerOffset
+                while ((innerOffset < vfat_info.cluster_size) && (readSize < size) && (offs + readSize < fileStat.st_size))
+                {
+                    tmpbuff[readSize] = (char)(cluster[innerOffset]);
+                    readSize++;
+                    innerOffset++;
+                }
+
+                // Unmap cluster
+                ClusterUnmap(cluster);
+
+                // If there is still room for data
+                if (readSize < size)
+                {
+                    innerOffset = 0;
+                    clusterId = vfat_next_cluster(clusterId);
+                }
+
+                // If buffer is full
+                else
+                {
+                    clusterId = 0x00000000;
+                }
+            }
+
+            // Copy chars into output buffer
+            memcpy(buf, tmpbuff, readSize * sizeof(char));
+            free(tmpbuff);
+            return readSize;
+        }
+
+        // If path cannot be resolved
+        else
+        {
+            return -ENOENT;
+        }
+    }
 }
 
 ////////////// No need to modify anything below this point
